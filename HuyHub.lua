@@ -2626,7 +2626,7 @@ local Library = Update:Window(" Huy Sặc-Bôi ","")
 spawn(function()
 	pcall(function()
 		game:GetService("RunService").Stepped:Connect(function()
-		  	if _G.Auto_Farm_Level then
+		  	if _G.Auto_Farm_Level or _G.Auto_Dough then
 			 	if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local Noclip = Instance.new("BodyVelocity")
 					Noclip.Name = "BodyClip"
@@ -2639,6 +2639,20 @@ spawn(function()
 					game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyClip"):Destroy()
 			 	end
 		  	end
+		end)
+	end)
+end)
+
+spawn(function()
+	pcall(function()
+		game:GetService("RunService").Stepped:Connect(function()
+			if _G.Auto_Farm_Level or _G.Auto_Dough then
+				for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+					if v:IsA("BasePart") then
+						v.CanCollide = false    
+					end
+				end
+			end
 		end)
 	end)
 end)
@@ -2698,6 +2712,8 @@ spawn(function()
 end)
 
 local Main = Library:Tab("Trang Chủ","rbxassetid://11446825283")
+local Weapon = Library:Tab("Lấy Item","rbxassetid://11446859498")
+local P = Library:Tab("Player","rbxassetid://11446900930")
 
 spawn(function()
 	while task.wait() do
@@ -2835,7 +2851,7 @@ spawn(function()
     end)
 end)
 
-Main:Toggle("Tự Động Click",false,function(value)
+Main:Toggle("Tự Động Click",_G.tap,function(value)
  _G.tap = value
 end)
 
@@ -2845,6 +2861,20 @@ spawn(function()
              pcall(function()
                  game:GetService'VirtualUser':CaptureController()
 	             game:GetService'VirtualUser':Button1Down(Vector2.new(1280, 672))
+            end)
+        end
+    end)
+end)
+
+Main:Toggle("Tự Động Haki",_G.AutoHaki,function(value)
+    _G.AutoHaki = value
+end)
+
+spawn(function()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if _G.AutoHaki then
+            pcall(function()
+                AutoHaki()
             end)
         end
     end)
@@ -2968,3 +2998,112 @@ spawn(function()
     end
 end)
 
+Weapon:Seperator(" Lấy Item ")
+
+Weapon:Toggle("Đánh Bột V2 [ Sea 3 ]",false,function(value)
+    _G.Auto_Dough = value
+end)
+
+spawn(function()
+	while wait() do
+		if _G.Auto_Dough then
+			pcall(function()
+				if game:GetService("Workspace").Enemies:FindFirstChild("Dough King [Lv. 2300] [Raid Boss]") then
+					for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+						if v.Name == "Dough King [Lv. 2300] [Raid Boss]" then
+							repeat wait()
+							    Attack()
+								EquipWeapon(_G.Select_Weapon)
+								AutoHaki()
+								topos(v.HumanoidRootPart.CFrame * MethodFarm)
+								v.HumanoidRootPart.CanCollide = false
+								v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+							until _G.Auto_Dough == false or not v.Parent or v.Humanoid.Health <= 0
+						end
+					end
+				end
+		    end)
+		end
+	end
+end)
+
+P:Seperator(" Chiến Đấu ")
+
+P:Button("Nhiệm Vụ Người Chơi",function()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
+end)
+
+Playerslist = {}
+    
+for i,v in pairs(game:GetService("Players"):GetChildren()) do
+    table.insert(Playerslist,v.Name)
+end
+    
+local SelectedPly = P:Dropdown("Chọn Người Chơi",Playerslist,function(value)
+        _G.Select_Player = value
+end)
+    
+P:Button("Làm Mới",function()
+    SelectedPly:Clear()
+    for i,v in pairs(game:GetService("Players"):GetChildren()) do  
+        SelectedPly:Add(v.Name)
+    end
+end)
+
+P:Toggle("Xem Chùa",_G.Spectate_Player,function(value)
+ _G.Spectate_Player = value
+end)
+
+spawn(function()
+	while wait() do
+		if _G.Spectate_Player then
+			pcall(function()
+				if game.Players:FindFirstChild(_G.Select_Player) then
+					game.Workspace.Camera.CameraSubject = game.Players:FindFirstChild(_G.Select_Player).Character.Humanoid
+				end
+			end)
+		else
+			game.Workspace.Camera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+		end
+	end
+end)
+
+P:Toggle("Đi Theo Người Chơi",_G.Teleport_to_Player,function(value)
+ _G.Teleport_to_Player = value
+StopTween(_G.Teleport_to_Player)
+end)
+
+
+spawn(function()
+	while wait() do
+		if _G.Teleport_to_Player then
+			pcall(function()
+				if game.Players:FindFirstChild(_G.Select_Player) then
+					topos(game.Players[_G.Select_Player].Character.HumanoidRootPart.CFrame)
+				end
+			end)
+		end
+	end
+end)
+
+Main:Seperator(" Chức Năng Ngon ")
+
+local Mirage_Status = Main:Label("Hiện Tại : N/Q")
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") or game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
+                Mirage_Status:Set("Hiện Tại : ✅️")	
+            else
+                Mirage_Status:Set("Hiện Tại : ❌️")	
+            end
+       end)
+    end
+end)
+
+Main:Button("Đi Tới Đảo Bí Ẩn",function()
+    if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
+        topos(game:GetService("Workspace").Map:FindFirstChild("MysticIsland").HumanoidRootPart.CFrame * CFrame.new(0,500,-100))
+    end
+end)
