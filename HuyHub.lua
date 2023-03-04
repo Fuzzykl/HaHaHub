@@ -2626,7 +2626,7 @@ local Library = Update:Window(" Huy Sặc-Bôi ","")
 spawn(function()
 	pcall(function()
 		game:GetService("RunService").Stepped:Connect(function()
-		  	if _G.Auto_Farm_Level or _G.Auto_Dough then
+		  	if _G.Auto_Farm_Level or _G.Auto_Dough or _G.Teleport_to_Player or _G.Mirage then
 			 	if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local Noclip = Instance.new("BodyVelocity")
 					Noclip.Name = "BodyClip"
@@ -2646,7 +2646,7 @@ end)
 spawn(function()
 	pcall(function()
 		game:GetService("RunService").Stepped:Connect(function()
-			if _G.Auto_Farm_Level or _G.Auto_Dough then
+			if _G.Auto_Farm_Level or _G.Auto_Dough or _G.Teleport_to_Player or _G.Mirage then
 				for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
 					if v:IsA("BasePart") then
 						v.CanCollide = false    
@@ -2698,7 +2698,7 @@ spawn(function()
 				    	else
 					    	StartMagnet = false
 					    	if game:GetService("ReplicatedStorage"):FindFirstChild(Ms) then
-						    	topos(game:GetService("ReplicatedStorage"):FindFirstChild(Ms).HumanoidRootPart.CFrame * CFrame.new(0,20,0))
+						    	topos(game:GetService("ReplicatedStorage"):FindFirstChild(Ms).HumanoidRootPart.CFrame * CFrame.new(0,50,0))
 				    		else	
 						    	topos(CFrameMon)
 					    	end
@@ -2871,13 +2871,13 @@ Main:Toggle("Tự Động Haki",_G.AutoHaki,function(value)
 end)
 
 spawn(function()
-    game:GetService("RunService").RenderStepped:Connect(function()
-        if _G.AutoHaki then
-            pcall(function()
+    while wait() do
+        pcall(function()
+            if _G.AutoHaki then
                 AutoHaki()
-            end)
-        end
-    end)
+            end
+        end)
+    end
 end)
 
   Main:Toggle("Xóa Hoạt Ảnh",true,function(value)
@@ -3102,8 +3102,10 @@ spawn(function()
     end
 end)
 
-Main:Button("Đi Tới Đảo Bí Ẩn",function()
-    if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
-        topos(game:GetService("Workspace").Map:FindFirstChild("MysticIsland").HumanoidRootPart.CFrame * CFrame.new(0,500,-100))
+Main:Toggle("Đi Tới Đảo Bí Ẩn",_G.Mirage,function()
+    if _G.Mirage then
+        if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
+            topos(game:GetService("Workspace").Map:FindFirstChild("MysticIsland").HumanoidRootPart.CFrame * CFrame.new(0,500,-100))
+        end
     end
 end)
